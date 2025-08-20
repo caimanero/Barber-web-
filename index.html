@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro Barberia Vulkano</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #121212;
+            color: #e0e0e0;
+            margin: 0;
+            padding: 1.5rem;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+            color: #ffffff;
+        }
+        .summary {
+            display: flex;
+            justify-content: space-around;
+            background-color: #1e1e1e;
+            padding: 1rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        .summary-item {
+            flex-basis: 30%;
+        }
+        .summary-item h3 {
+            margin: 0 0 0.5rem 0;
+            color: #a0a0a0;
+            font-size: 0.9rem;
+        }
+        .summary-item p {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #007bff;
+        }
+        .main-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem;
+        }
+        .form-container, .history-container {
+            background-color: #1e1e1e;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
+        }
+        .form-container {
+            flex: 1;
+            min-width: 280px;
+        }
+        .history-container {
+            flex: 2;
+            min-width: 400px;
+        }
+        h2 {
+            margin-top: 0;
+            border-bottom: 1px solid #444;
+            padding-bottom: 0.5rem;
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #a0a0a0;
+        }
+        select, input {
+            width: 100%;
+            padding: 0.75rem;
+            background-color: #333;
+            border: 1px solid #444;
+            border-radius: 8px;
+            color: #e0e0e0;
+            font-size: 1rem;
+            box-sizing: border-box;
+        }
+        button {
+            width: 100%;
+            padding: 1rem;
+            background-color: #007bff;
+            border: none;
+            border-radius: 8px;
+            color: #ffffff;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        #status {
+            text-align: center;
+            margin-top: 1rem;
+            height: 20px;
+            font-weight: bold;
+            color: #28a745;
+        }
+        .history-table-wrapper {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid #333;
+        }
+        th {
+            background-color: #2c2c2c;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>💈 Barberia Vulkano</h1>
+
+        <div class="summary">
+            <div class="summary-item">
+                <h3>GANANCIA HOY</h3>
+                <p id="totalHoy">₡0</p>
+            </div>
+            <div class="summary-item">
+                <h3>PAGO NELSON</h3>
+                <p id="totalNelson">₡0</p>
+            </div>
+             <div class="summary-item">
+                <h3>PAGO GABRIEL</h3>
+                <p id="totalGabriel">₡0</p>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="form-container">
+                <h2>Nuevo Registro</h2>
+                <form id="registroForm">
+                    <div class="form-group">
+                        <label for="barbero">Barbero</label>
+                        <select id="barbero" name="barbero" required>
+                            <option value="NELSON">NELSON</option>
+                            <option value="GABRIEL">GABRIEL</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="metodoPago">Método de Pago</label>
+                        <select id="metodoPago" name="metodoPago" required>
+                            <option value="EFECTIVO">EFECTIVO</option>
+                            <option value="SINPE">SINPE</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="monto">Monto (Pago Barbero)</label>
+                        <input type="number" id="monto" name="monto" required min="1000" step="500">
+                    </div>
+                    <button type="submit">Guardar Registro</button>
+                </form>
+                <div id="status"></div>
+            </div>
+
+            <div class="history-container">
+                <h2>Historial de Registros</h2>
+                <div class="history-table-wrapper">
+                    <table id="historyTable">
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Barbero</th>
+                                <th>Monto</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Elementos del DOM
+        const form = document.getElementById('registroForm');
+        const statusDiv = document.getElementById('status');
+        const historyTableBody = document.querySelector("#historyTable tbody");
+        const totalHoyEl = document.getElementById('totalHoy');
+        const totalNelsonEl = document.getElementById('totalNelson');
+        const totalGabrielEl = document.getElementById('totalGabriel');
+
+        // Función para formatear números como moneda (colones)
+        function formatCurrency(value) {
+            return new Intl.NumberFormat('es-CR', { style: 'currency', currency: 'CRC', minimumFractionDigits: 0 }).format(value);
+        }
+        
+        // Cargar y mostrar los datos cuando la página se carga
+        window.addEventListener('DOMContentLoaded', () => {
+            renderTable();
+            updateSummary();
+        });
+
+        // Manejar el envío del formulario
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            // Crear el objeto de registro
+            const newRecord = {
+                id: Date.now(), // ID único basado en la fecha
+                barbero: form.barbero.value,
+                metodoPago: form.metodoPago.value,
+                monto: parseFloat(form.monto.value),
+                date: new Date().toISOString()
+            };
+
+            // Guardar el registro
+            saveRecord(newRecord);
+            
+            // Actualizar la interfaz
+            renderTable();
+            updateSummary();
+            form.reset();
+
+            // Mostrar mensaje de éxito
+            statusDiv.textContent = '¡Registro guardado!';
+            setTimeout(() => { statusDiv.textContent = ''; }, 3000);
+        });
+
+        // Obtener registros desde localStorage
+        function getRecords() {
+            const records = localStorage.getItem('barberiaRegistros');
+            return records ? JSON.parse(records) : [];
+        }
+
+        // Guardar un nuevo registro en localStorage
+        function saveRecord(record) {
+            const records = getRecords();
+            records.push(record);
+            localStorage.setItem('barberiaRegistros', JSON.stringify(records));
+        }
+
+        // Dibujar la tabla de historial
+        function renderTable() {
+            const records = getRecords().sort((a, b) => new Date(b.date) - new Date(a.date)); // Ordenar del más nuevo al más viejo
+            historyTableBody.innerHTML = ''; // Limpiar la tabla
+
+            if (records.length === 0) {
+                historyTableBody.innerHTML = `<tr><td colspan="3" style="text-align:center;">No hay registros.</td></tr>`;
+                return;
+            }
+
+            records.forEach(record => {
+                const row = document.createElement('tr');
+                const recordDate = new Date(record.date);
+                const formattedDate = `${recordDate.toLocaleDateString('es-CR')} ${recordDate.toLocaleTimeString('es-CR', {hour: '2-digit', minute:'2-digit'})}`;
+
+                row.innerHTML = `
+                    <td>${formattedDate}</td>
+                    <td>${record.barbero}</td>
+                    <td>${formatCurrency(record.monto)}</td>
+                `;
+                historyTableBody.appendChild(row);
+            });
+        }
+        
+        // Actualizar los totales del día
+        function updateSummary() {
+            const records = getRecords();
+            const today = new Date().toLocaleDateString('en-CA'); // Formato YYYY-MM-DD
+
+            let totalHoy = 0;
+            let totalNelson = 0;
+            let totalGabriel = 0;
+
+            records.forEach(record => {
+                const recordDate = new Date(record.date).toLocaleDateString('en-CA');
+                if (recordDate === today) {
+                    if (record.barbero === 'NELSON') {
+                        totalNelson += record.monto;
+                    } else if (record.barbero === 'GABRIEL') {
+                        totalGabriel += record.monto;
+                    }
+                }
+            });
+
+            totalHoy = totalNelson + totalGabriel;
+
+            totalHoyEl.textContent = formatCurrency(totalHoy);
+            totalNelsonEl.textContent = formatCurrency(totalNelson);
+            totalGabrielEl.textContent = formatCurrency(totalGabriel);
+        }
+    </script>
+</body>
+</html>
