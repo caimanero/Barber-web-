@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control de Barbería</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f1f5f9; /* slate-100 */
+        }
+        .card {
+            background-color: white;
+            border-radius: 0.5rem;
+            border: 1px solid #e2e8f0; /* slate-200 */
+            margin-bottom: 1.5rem;
+            box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.05);
+        }
+        /* Paleta de colores pastel */
+        .sinpe-btn-active {
+            background-color: #2dd4bf; /* teal-400 */
+            color: white;
+            border-color: #2dd4bf; 
+        }
+        .efect-btn-active {
+            background-color: #38bdf8; /* sky-400 */
+            color: white;
+            border-color: #38bdf8;
+        }
+        .tab-active {
+            color: #1e293b; /* slate-800 */
+            font-weight: 500;
+            border-bottom: 2px solid #38bdf8; /* sky-400 */
+        }
+        .tab-inactive {
+            color: #64748b; /* slate-500 */
+            border-bottom: 2px solid transparent;
+        }
+        .highlight-sinpe {
+            background-color: #2dd4bf !important; /* teal-400 */
+            color: white !important;
+            border-color: #14b8a6 !important; /* teal-500 */
+            transition: background-color 0.1s ease-in-out;
+        }
+        .highlight-efect {
+            background-color: #38bdf8 !important; /* sky-400 */
+            color: white !important;
+            border-color: #0ea5e9 !important; /* sky-500 */
+            transition: background-color 0.1s ease-in-out;
+        }
+        .delete-btn {
+            padding: 0.25rem;
+            border-radius: 9999px;
+            color: #9ca3af; /* gray-400 */
+            transition: background-color 0.2s, color 0.2s;
+        }
+        .delete-btn:hover {
+            background-color: #fee2e2; /* red-100 */
+            color: #ef4444; /* red-500 */
+        }
+        #date-picker::-webkit-datetime-edit {
+            margin: auto;
+        }
+    </style>
+</head>
+<body class="p-4">
+
+    <div id="app-container" class="max-w-sm mx-auto">
+
+        <!-- Card: Añadir Corte -->
+        <div class="card bg-sky-50 p-5">
+            <img src="https://i.postimg.cc/NF9C7m6v/IMG-20250818-060649.png" alt="Logo de Vulkano Barbershop" class="mx-auto mb-4 w-24 h-24">
+            <div class="mb-5">
+                <input type="date" id="date-picker" class="w-full p-2 border border-gray-300 rounded-md text-center text-sm text-gray-700">
+            </div>
+
+            <!-- Método de Pago -->
+            <div class="mb-5">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Método de Pago</label>
+                <div id="payment-method-container" class="grid grid-cols-2 gap-2">
+                    <button data-method="SINPE" class="w-full py-2 text-sm font-semibold rounded-md border sinpe-btn-active">SINPE</button>
+                    <button data-method="EFECT" class="w-full py-2 text-sm font-semibold bg-white border-gray-300 text-gray-700 rounded-md">EFECT</button>
+                </div>
+            </div>
+
+            <!-- Monto -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Monto</label>
+                <div id="amount-buttons" class="grid grid-cols-3 gap-2 text-center">
+                    <button data-amount="1000" class="p-2 text-sm border border-gray-300 text-gray-700 rounded-md hover:bg-gray-100">1 000</button>
+                    <button data-amount="2000" class="p-2 text-sm border border-gray-300 text-gray-700 rounded-md hover:bg-gray-100">2 000</button>
+                    <button data-amount="3000" class="p-2 text-sm border border-gray-300 text-gray-700 rounded-md hover:bg-gray-100">3 000</button>
+                    <button data-amount="4000" class="p-2 text-sm border border-gray-300 text-gray-700 rounded-md hover:bg-gray-100">4 000</button>
+                    <button data-amount="5000" class="p-2 text-sm border border-gray-300 text-gray-700 rounded-md hover:bg-gray-100">5 000</button>
+                    <button data-amount="6000" class="p-2 text-sm border border-gray-300 text-gray-700 rounded-md hover:bg-gray-100">6 000</button>
+                    <button data-amount="7000" class="p-2 text-sm border border-gray-300 text-gray-700 rounded-md hover:bg-gray-100">7 000</button>
+                    <button data-amount="8000" class="p-2 text-sm border border-gray-300 text-gray-700 rounded-md hover:bg-gray-100">8 000</button>
+                    <button data-amount="9000" class="p-2 text-sm border border-gray-300 text-gray-700 rounded-md hover:bg-gray-100">9 000</button>
+                    <button data-amount="10000" class="p-2 text-sm border border-gray-300 text-gray-700 rounded-md col-span-3 hover:bg-gray-100">10 000</button>
+                    <button id="manual-amount-btn" class="p-2 text-sm border border-gray-300 text-gray-700 rounded-md col-span-3 hover:bg-gray-100">Otro Monto</button>
+                </div>
+                <div id="manual-amount-container" class="mt-2 hidden">
+                    <div class="flex gap-2">
+                        <input type="number" id="manual-amount-input" placeholder="Ingresar monto" class="w-full p-2 border border-gray-300 rounded-md text-sm">
+                        <button id="add-manual-amount-btn" class="px-4 py-2 bg-sky-500 text-white text-sm font-semibold rounded-md hover:bg-sky-600">Agregar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card: Historial de Transacciones / Totales -->
+        <div class="card">
+            <!-- Pestañas de Filtro -->
+            <div class="border-b border-gray-200">
+                <nav id="view-tabs" class="flex justify-between px-2">
+                    <button data-view="Nelson" class="py-3 px-1 text-xs tab-active whitespace-nowrap">DÍA NELSON</button>
+                    <button data-view="Gabriel" class="py-3 px-1 text-xs tab-inactive whitespace-nowrap">DÍA GABRIEL</button>
+                    <button data-view="Totales" class="py-3 px-1 text-xs tab-inactive whitespace-nowrap">TOTALES</button>
+                    <button data-view="Anual" class="py-3 px-1 text-xs tab-inactive whitespace-nowrap">ANUAL</button>
+                </nav>
+            </div>
+            <!-- Contenido de Transacciones -->
+            <div id="transaction-list-container" class="p-6 text-center bg-sky-50 rounded-b-md">
+                <p class="text-gray-500">No hay transacciones para Nelson en esta fecha.</p>
+            </div>
+            <!-- Contenido de Totales Globales -->
+            <div id="global-totals-container" class="p-6 space-y-2 text-sm hidden bg-sky-50 rounded-b-md">
+                 <div class="flex justify-between items-center p-2 rounded-md bg-teal-50">
+                    <span class="font-medium text-slate-600">N° DE SINPES</span>
+                    <span id="global-sinpes-count" class="font-semibold text-slate-800">0</span>
+                </div>
+                <div class="flex justify-between items-center p-2 rounded-md bg-sky-50">
+                    <span class="font-medium text-slate-600">SINPES</span>
+                    <span id="global-sinpes-total" class="font-semibold text-slate-800">₡0</span>
+                </div>
+                <div class="flex justify-between items-center p-2 rounded-md bg-teal-50">
+                    <span class="font-medium text-slate-600">CLIENTES</span>
+                    <span id="global-clientes" class="font-semibold text-slate-800">0</span>
+                </div>
+                <div class="flex justify-between items-center p-2 rounded-md bg-sky-50">
+                    <span class="font-medium text-slate-600">GANANCIA DÍA</span>
+                    <span id="global-ganancia-dia" class="font-semibold text-slate-800">₡0</span>
+                </div>
+                <div class="flex justify-between items-center p-2 rounded-md bg-teal-50">
+                    <span class="font-medium text-slate-600">GANANCIA SEMANA</span>
+                    <span id="global-ganancia-semana" class="font-semibold text-slate-800">₡0</span>
+                </div>
+                <div class="flex justify-between items-center p-2 rounded-md bg-sky-50">
+                    <span class="font-medium text-slate-600">GANANCIA MES</span>
+                    <span id="global-ganancia-mes" class="font-semibold text-slate-800">₡0</span>
+                </div>
+            </div>
+            <!-- Contenido de Totales Anuales -->
+            <div id="annual-totals-container" class="p-4 hidden bg-sky-50 rounded-b-md">
+                <table class="w-full text-sm text-left">
+                    <thead class="bg-slate-100">
+                        <tr>
+                            <th class="px-4 py-2 font-semibold text-slate-600">MES</th>
+                            <th class="px-4 py-2 font-semibold text-slate-600 text-right">NELSON</th>
+                            <th class="px-4 py-2 font-semibold text-slate-600 text-right">GABRIEL</th>
+                            <th class="px-4 py-2 font-semibold text-slate-600 text-right">TOTAL</th>
+                        </tr>
+                    </thead>
+                    <tbody id="annual-table-body">
+                        <!-- Rows will be generated by JS -->
+                    </tbody>
+                </table>
+                 <button id="load-history-btn" class="mt-4 w-full p-2 text-sm bg-sky-500 text-white font-semibold rounded-md hover:bg-sky-600">Cargar Datos Históricos</button>
+            </div>
+        </div>
+
+        <!-- Card: Resumen de Totales por Barbero -->
+        <div id="barber-totals-card" class="card bg-sky-50 p-5 space-y-2 text-sm">
+            <div class="flex justify-between items-center bg-rose-50 p-2 rounded-md">
+                <span class="text-rose-500 font-medium">TOTAL EFECT</span>
+                <span id="total-efect" class="font-semibold text-rose-500">₡10,000</span>
+            </div>
+            <div class="flex justify-between items-center bg-teal-50 p-2 rounded-md">
+                <span class="text-teal-600 font-medium">GANANCIA DÍA</span>
+                <span id="ganancia-dia" class="font-semibold text-teal-800">₡0</span>
+            </div>
+            <div class="flex justify-between items-center bg-rose-50 p-2 rounded-md">
+                <span id="pago-barber-name" class="text-rose-500 font-medium">PAGO NELSON</span>
+                <span id="pago-barber" class="font-semibold text-rose-500">₡0</span>
+            </div>
+            <div class="flex justify-between items-center bg-amber-50 p-2 rounded-md">
+                <span id="clientes-barber-name" class="text-amber-500 font-medium">CLIENTES NELSON</span>
+                <span id="total-clientes" class="font-semibold text-amber-500">0</span>
+            </div>
+            <div class="flex justify-between items-center bg-slate-50 p-2 rounded-md">
+                <span class="text-slate-600">TOTAL SEMANA</span>
+                <span id="total-semana" class="font-semibold text-slate-800">₡0</span>
+            </div>
+            <div class="flex justify-between items-center bg-sky-50 p-2 rounded-md">
+                <span id="mes-barber-name" class="text-sky-600 font-medium">MES NELSON</span>
+                <span id="total-mes" class="font-semibold text-sky-600">₡0</span>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Modal para Cargar Datos Históricos -->
+    <div id="history-modal-overlay" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center p-4">
+        <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-sm">
+            <h3 class="text-lg font-semibold mb-4">Cargar Pagos Mensuales</h3>
+            <div class="space-y-4 text-sm">
+                <div>
+                    <label for="month-select" class="block mb-1 font-medium text-gray-700">Mes</label>
+                    <select id="month-select" class="w-full p-2 border border-gray-300 rounded-md">
+                        <!-- Options generated by JS -->
+                    </select>
+                </div>
+                <div>
+                    <label for="nelson-total-input" class="block mb-1 font-medium text-gray-700">Total Pago Nelson</label>
+                    <input type="number" id="nelson-total-input" placeholder="₡0" class="w-full p-2 border border-gray-300 rounded-md">
+                </div>
+                <div>
+                    <label for="gabriel-total-input" class="block mb-1 font-medium text-gray-700">Total Pago Gabriel</label>
+                    <input type="number" id="gabriel-total-input" placeholder="₡0" class="w-full p-2 border border-gray-300 rounded-md">
+                </div>
+            </div>
+            <div class="mt-6 flex justify-end gap-2">
+                <button id="close-history-modal-btn" class="px-4 py-2 bg-gray-200 text-gray-800 font-semibold rounded-md hover:bg-gray-300">Cerrar</button>
+                <button id="save-history-btn" class="px-4 py-2 bg-sky-500 text-white font-semibold rounded-md hover:bg-sky-600">Guardar Mes</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        // Import Firebase modules
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, onSnapshot, addDoc, deleteDoc, doc, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // --- INSTRUCCIONES PARA NETLIFY ---
+        // 1. Copia el objeto 'firebaseConfig' de tu proyecto de Firebase.
+        // 2. Pégalo aquí, reemplazando el objeto de ejemplo.
+        const firebaseConfigFromUser = {
+            apiKey: "TU_API_KEY",
+            authDomain: "TU_AUTH_DOMAIN",
+            projectId: "TU_PROJECT_ID",
+            storageBucket: "TU_STORAGE_BUCKET",
+            messagingSenderId: "TU_MESSAGING_SENDER_ID",
+            appId: "TU_APP_ID"
+        };
+        // --- FIN DE LAS INSTRUCCIONES ---
+
+        try {
+            const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : firebaseConfigFromUser;
+            const appId = typeof __app_id !== 'undefined' ? __app_id : firebaseConfig.appId;
+
+            if (!firebaseConfig || !firebaseConfig.apiKey || firebaseConfig.apiKey === "TU_API_KEY") {
+                 throw new Error("La configuración de Firebase no es válida. Reemplaza los valores de ejemplo.");
+            }
+            
+            const app = initializeApp(firebaseConfig);
+            const auth = getAuth(app);
+            const db = getFirestore(app);
+            setLogLevel('debug');
+            
+            const transactionsCol = collection(db, `artifacts/${appId}/public/data/transactions`);
+
+            // --- CONSTANTS ---
+            const DAILY_CASH_FLOAT = 10000;
+
+            // --- STATE MANAGEMENT ---
+            let state = {
+                transactions: [],
+                selectedDate: new Date(),
+                currentBarberView: 'Nelson',
+                currentView: 'Nelson',
+                paymentMethod: 'SINPE',
+                unsubscribe: null
+            };
+
+            // --- DOM ELEMENTS ---
+            const datePicker = document.getElementById('date-picker');
+            const paymentContainer = document.getElementById('payment-method-container');
+            const amountButtons = document.getElementById('amount-buttons');
+            const transactionListContainer = document.getElementById('transaction-list-container');
+            const viewTabs = document.getElementById('view-tabs');
+            const barberTotalsCard = document.getElementById('barber-totals-card');
+            const manualAmountBtn = document.getElementById('manual-amount-btn');
+            const manualAmountContainer = document.getElementById('manual-amount-container');
+            const manualAmountInput = document.getElementById('manual-amount-input');
+            const addManualAmountBtn = document.getElementById('add-manual-amount-btn');
+            
+            // --- MODAL DOM ELEMENTS ---
+            const historyModalOverlay = document.getElementById('history-modal-overlay');
+            const loadHistoryBtn = document.getElementById('load-history-btn');
+            const closeHistoryModalBtn = document.getElementById('close-history-modal-btn');
+            const saveHistoryBtn = document.getElementById('save-history-btn');
+            const monthSelect = document.getElementById('month-select');
+            const nelsonTotalInput = document.getElementById('nelson-total-input');
+            const gabrielTotalInput = document.getElementById('gabriel-total-input');
+            
+            // --- TOTALS DOM ELEMENTS ---
+            const globalTotalsContainer = document.getElementById('global-totals-container');
+            const globalSinpesCountEl = document.getElementById('global-sinpes-count');
+            const globalSinpesTotalEl = document.getElementById('global-sinpes-total');
+            const globalClientesEl = document.getElementById('global-clientes');
+            const globalGananciaDiaEl = document.getElementById('global-ganancia-dia');
+            const globalGananciaSemanaEl = document.getElementById('global-ganancia-semana');
+            const globalGananciaMesEl = document.getElementById('global-ganancia-mes');
+
+
+            const annualTotalsContainer = document.getElementById('annual-totals-container');
+            const annualTableBody = document.getElementById('annual-table-body');
+
+            const pagoBarberNameEl = document.getElementById('pago-barber-name');
+            const pagoBarberEl = document.getElementById('pago-barber');
+            const clientesBarberNameEl = document.getElementById('clientes-barber-name');
+            const totalClientesEl = document.getElementById('total-clientes');
+            const totalSemanaEl = document.getElementById('total-semana');
+            const mesBarberNameEl = document.getElementById('mes-barber-name');
+            const totalMesEl = document.getElementById('total-mes');
+            const totalEfectEl = document.getElementById('total-efect');
+            const gananciaDiaEl = document.getElementById('ganancia-dia');
+
+
+            // --- DATA & DATE FUNCTIONS ---
+            const formatCurrency = (amount) => `₡${new Intl.NumberFormat('es-CR').format(amount)}`;
+            const toISODateString = (date) => {
+                const pad = (num) => (num < 10 ? '0' + num : num);
+                return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+            };
+            const isSameDay = (d1, d2) => d1.getFullYear() === d2.getFullYear() && d1.getMonth() === d2.getMonth() && d1.getDate() === d2.getDate();
+            const getWeekRange = (date) => {
+                const start = new Date(date);
+                const day = start.getDay();
+                const diff = start.getDate() - day + (day === 0 ? -6 : 1);
+                start.setDate(diff);
+                start.setHours(0, 0, 0, 0);
+                const end = new Date(start);
+                end.setDate(start.getDate() + 6);
+                end.setHours(23, 59, 59, 999);
+                return { start, end };
+            };
+
+            // --- RENDER FUNCTIONS ---
+            const renderTransactions = () => {
+                const selected = state.selectedDate;
+                const filteredTransactions = state.transactions.filter(t => 
+                    t.barber === state.currentBarberView && isSameDay(new Date(t.timestamp), selected)
+                );
+                
+                transactionListContainer.innerHTML = ''; 
+
+                if (filteredTransactions.length === 0) {
+                    transactionListContainer.innerHTML = `<p class="text-gray-500">No hay transacciones para ${state.currentBarberView} en esta fecha.</p>`;
+                    return;
+                }
+
+                const list = document.createElement('ul');
+                list.className = 'space-y-4 text-left';
+                filteredTransactions.forEach(t => {
+                    const item = document.createElement('li');
+                    item.className = 'flex justify-between items-center text-base'; 
+                    const paymentMethodColor = t.paymentMethod === 'SINPE' ? 'text-teal-500' : 'text-sky-500';
+                    
+                    item.innerHTML = `
+                        <div class="flex items-center">
+                            <span class="${paymentMethodColor} font-semibold">${t.paymentMethod}</span>
+                            <span class="${paymentMethodColor} font-semibold ml-4">${formatCurrency(t.amount)}</span>
+                        </div>
+                        <button data-id="${t.id}" class="delete-btn">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                        </button>
+                    `;
+                    list.appendChild(item);
+                });
+                transactionListContainer.appendChild(list);
+            };
+
+            const renderBarberTotals = () => {
+                const selected = state.selectedDate;
+                const weekRange = getWeekRange(selected);
+                
+                const allBarberTransactions = state.transactions.filter(t => t.barber === state.currentBarberView);
+                const dailyTransactions = allBarberTransactions.filter(t => isSameDay(new Date(t.timestamp), selected));
+                const totalEfectClientes = dailyTransactions.filter(t => t.paymentMethod === 'EFECT').reduce((sum, t) => sum + t.amount, 0);
+                const gananciaDia = dailyTransactions.reduce((sum, t) => sum + t.amount, 0);
+                const pagoBarbero = gananciaDia / 2;
+                const totalEfectConCaja = DAILY_CASH_FLOAT + totalEfectClientes;
+
+                const weeklyTransactions = allBarberTransactions.filter(t => new Date(t.timestamp) >= weekRange.start && new Date(t.timestamp) <= weekRange.end);
+                let pagoSemanalAcumulado = 0;
+                const weeklyDailyPayments = {};
+                weeklyTransactions.forEach(t => {
+                    const dateKey = new Date(t.timestamp).toDateString();
+                    if (!weeklyDailyPayments[dateKey]) weeklyDailyPayments[dateKey] = 0;
+                    weeklyDailyPayments[dateKey] += t.amount;
+                });
+                for (const dateKey in weeklyDailyPayments) {
+                    pagoSemanalAcumulado += weeklyDailyPayments[dateKey] / 2;
+                }
+
+                const monthlyTransactions = allBarberTransactions.filter(t => new Date(t.timestamp).getMonth() === selected.getMonth() && new Date(t.timestamp).getFullYear() === selected.getFullYear());
+                let pagoMensualAcumulado = 0;
+                const monthlyDailyPayments = {};
+                monthlyTransactions.forEach(t => {
+                    const dateKey = new Date(t.timestamp).toDateString();
+                    if (!monthlyDailyPayments[dateKey]) monthlyDailyPayments[dateKey] = 0;
+                    monthlyDailyPayments[dateKey] += t.amount;
+                });
+                for (const dateKey in monthlyDailyPayments) {
+                    pagoMensualAcumulado += monthlyDailyPayments[dateKey] / 2;
+                }
+
+                const barberNameUpper = state.currentBarberView.toUpperCase();
+                pagoBarberNameEl.textContent = `PAGO ${barberNameUpper}`;
+                clientesBarberNameEl.textContent = `CLIENTES ${barberNameUpper}`;
+                mesBarberNameEl.textContent = `MES ${barberNameUpper}`;
+
+                totalEfectEl.textContent = formatCurrency(totalEfectConCaja);
+                gananciaDiaEl.textContent = formatCurrency(gananciaDia);
+                pagoBarberEl.textContent = formatCurrency(pagoBarbero);
+                totalClientesEl.textContent = dailyTransactions.length;
+                totalSemanaEl.textContent = formatCurrency(pagoSemanalAcumulado);
+                totalMesEl.textContent = formatCurrency(pagoMensualAcumulado);
+            };
+
+            const renderGlobalTotals = () => {
+                const selected = state.selectedDate;
+                const weekRange = getWeekRange(selected);
+
+                const allDailyTransactions = state.transactions.filter(t => isSameDay(new Date(t.timestamp), selected));
+                const allWeeklyTransactions = state.transactions.filter(t => new Date(t.timestamp) >= weekRange.start && new Date(t.timestamp) <= weekRange.end);
+                const allMonthlyTransactions = state.transactions.filter(t => new Date(t.timestamp).getMonth() === selected.getMonth() && new Date(t.timestamp).getFullYear() === selected.getFullYear());
+                
+                const sinpeTransactions = allDailyTransactions.filter(t => t.paymentMethod === 'SINPE');
+                const sinpeCount = sinpeTransactions.length;
+                const sinpeTotalAmount = sinpeTransactions.reduce((sum, t) => sum + t.amount, 0);
+                const clientCount = allDailyTransactions.length;
+                const totalGananciaDia = allDailyTransactions.reduce((sum, t) => sum + t.amount, 0);
+
+                let pagoSemanalTotal = 0;
+                const weeklyDailyTotals = {};
+                allWeeklyTransactions.forEach(t => {
+                    const dateKey = new Date(t.timestamp).toDateString();
+                    if (!weeklyDailyTotals[dateKey]) weeklyDailyTotals[dateKey] = 0;
+                    weeklyDailyTotals[dateKey] += t.amount;
+                });
+                for (const dateKey in weeklyDailyTotals) {
+                    pagoSemanalTotal += weeklyDailyTotals[dateKey] / 2;
+                }
+
+                let pagoMensualTotal = 0;
+                const monthlyDailyTotals = {};
+                allMonthlyTransactions.forEach(t => {
+                    const dateKey = new Date(t.timestamp).toDateString();
+                    if (!monthlyDailyTotals[dateKey]) monthlyDailyTotals[dateKey] = 0;
+                    monthlyDailyTotals[dateKey] += t.amount;
+                });
+                for (const dateKey in monthlyDailyTotals) {
+                    pagoMensualTotal += monthlyDailyTotals[dateKey] / 2;
+                }
+
+                globalSinpesCountEl.textContent = sinpeCount;
+                globalSinpesTotalEl.textContent = formatCurrency(sinpeTotalAmount);
+                globalClientesEl.textContent = clientCount;
+                globalGananciaDiaEl.textContent = formatCurrency(totalGananciaDia);
+                globalGananciaSemanaEl.textContent = formatCurrency(pagoSemanalTotal);
+                globalGananciaMesEl.textContent = formatCurrency(pagoMensualTotal);
+            };
+
+            const renderAnnualTotals = () => {
+                const currentYear = state.selectedDate.getFullYear();
+                const yearlyTransactions = state.transactions.filter(t => new Date(t.timestamp).getFullYear() === currentYear);
+                
+                const monthNames = ['ENE', 'FEB', 'MAR', 'ABR', 'MAY', 'JUN', 'JUL', 'AGO', 'SEP', 'OCT', 'NOV', 'DIC'];
+                const monthlyData = Array(12).fill(null).map(() => ({ nelson: 0, gabriel: 0 }));
+
+                yearlyTransactions.forEach(t => {
+                    const month = new Date(t.timestamp).getMonth();
+                    const payment = t.amount / 2;
+                    if (t.barber === 'Nelson') {
+                        monthlyData[month].nelson += payment;
+                    } else if (t.barber === 'Gabriel') {
+                        monthlyData[month].gabriel += payment;
+                    }
+                });
+
+                annualTableBody.innerHTML = '';
+                monthNames.forEach((name, index) => {
+                    const nelsonTotal = monthlyData[index].nelson;
+                    const gabrielTotal = monthlyData[index].gabriel;
+                    const monthTotal = nelsonTotal + gabrielTotal;
+                    const rowBgClass = index % 2 === 0 ? 'bg-teal-50' : 'bg-sky-50';
+                    const row = `
+                        <tr class="border-b ${rowBgClass}">
+                            <td class="px-4 py-2 font-semibold">${name}</td>
+                            <td class="px-4 py-2 text-right">${formatCurrency(nelsonTotal)}</td>
+                            <td class="px-4 py-2 text-right">${formatCurrency(gabrielTotal)}</td>
+                            <td class="px-4 py-2 text-right font-bold">${formatCurrency(monthTotal)}</td>
+                        </tr>
+                    `;
+                    annualTableBody.innerHTML += row;
+                });
+            };
+
+            const render = () => {
+                const views = {
+                    'Nelson': () => {
+                        transactionListContainer.classList.remove('hidden');
+                        globalTotalsContainer.classList.add('hidden');
+                        annualTotalsContainer.classList.add('hidden');
+                        barberTotalsCard.classList.remove('hidden');
+                        renderTransactions();
+                        renderBarberTotals();
+                    },
+                    'Gabriel': () => {
+                        transactionListContainer.classList.remove('hidden');
+                        globalTotalsContainer.classList.add('hidden');
+                        annualTotalsContainer.classList.add('hidden');
+                        barberTotalsCard.classList.remove('hidden');
+                        renderTransactions();
+                        renderBarberTotals();
+                    },
+                    'Totales': () => {
+                        transactionListContainer.classList.add('hidden');
+                        globalTotalsContainer.classList.remove('hidden');
+                        annualTotalsContainer.classList.add('hidden');
+                        barberTotalsCard.classList.add('hidden');
+                        renderGlobalTotals();
+                    },
+                    'Anual': () => {
+                        transactionListContainer.classList.add('hidden');
+                        globalTotalsContainer.classList.add('hidden');
+                        annualTotalsContainer.classList.remove('hidden');
+                        barberTotalsCard.classList.add('hidden');
+                        renderAnnualTotals();
+                    }
+                };
+                views[state.currentView]();
+            };
+
+            // --- FIRESTORE FUNCTIONS ---
+            async function addTransactionToFirestore(data) {
+                try {
+                    await addDoc(transactionsCol, data);
+                } catch (e) {
+                    console.error("Error adding document: ", e);
+                }
+            }
+
+            async function deleteTransactionFromFirestore(id) {
+                try {
+                    await deleteDoc(doc(db, `artifacts/${appId}/public/data/transactions`, id));
+                } catch (e) {
+                    console.error("Error deleting document: ", e);
+                }
+            }
+
+            function listenForTransactions() {
+                if (state.unsubscribe) state.unsubscribe();
+                
+                state.unsubscribe = onSnapshot(transactionsCol, (snapshot) => {
+                    state.transactions = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
+                    render();
+                }, (error) => {
+                    console.error("Error en el listener de Firestore:", error);
+                });
+            }
+
+            // --- EVENT LISTENERS ---
+            datePicker.addEventListener('change', (e) => {
+                const [year, month, day] = e.target.value.split('-').map(Number);
+                state.selectedDate = new Date(year, month - 1, day);
+                render();
+            });
+
+            paymentContainer.addEventListener('click', (e) => {
+                const clickedButton = e.target.closest('button');
+                if (clickedButton) {
+                    state.paymentMethod = clickedButton.dataset.method;
+                    paymentContainer.querySelectorAll('button').forEach(btn => {
+                        btn.classList.remove('sinpe-btn-active', 'efect-btn-active');
+                        btn.classList.add('bg-white', 'border-gray-300', 'text-gray-700');
+                    });
+                    
+                    if (state.paymentMethod === 'SINPE') {
+                        clickedButton.classList.add('sinpe-btn-active');
+                    } else {
+                        clickedButton.classList.add('efect-btn-active');
+                    }
+                    clickedButton.classList.remove('bg-white', 'border-gray-300', 'text-gray-700');
+                }
+            });
+            
+            const handleAddTransaction = (amount) => {
+                const newTransaction = {
+                    barber: state.currentBarberView,
+                    paymentMethod: state.paymentMethod,
+                    amount: amount,
+                    timestamp: state.selectedDate.toISOString()
+                };
+                addTransactionToFirestore(newTransaction);
+            };
+
+            amountButtons.addEventListener('click', (e) => {
+                const clickedButton = e.target.closest('button');
+                if (clickedButton && clickedButton.dataset.amount) {
+                    const highlightClass = state.paymentMethod === 'SINPE' ? 'highlight-sinpe' : 'highlight-efect';
+                    clickedButton.classList.add(highlightClass);
+                    setTimeout(() => clickedButton.classList.remove(highlightClass), 400);
+                    handleAddTransaction(parseInt(clickedButton.dataset.amount, 10));
+                }
+            });
+
+            manualAmountBtn.addEventListener('click', () => {
+                manualAmountContainer.classList.toggle('hidden');
+                manualAmountInput.focus();
+            });
+
+            addManualAmountBtn.addEventListener('click', () => {
+                const amount = parseInt(manualAmountInput.value, 10);
+                if (!isNaN(amount) && amount > 0) {
+                    handleAddTransaction(amount);
+                    manualAmountInput.value = '';
+                    manualAmountContainer.classList.add('hidden');
+                }
+            });
+
+            viewTabs.addEventListener('click', (e) => {
+                 const clickedTab = e.target.closest('button');
+                 if (clickedTab && clickedTab.dataset.view) {
+                    state.currentView = clickedTab.dataset.view;
+                    if(state.currentView !== 'Totales' && state.currentView !== 'Anual') {
+                        state.currentBarberView = state.currentView;
+                    }
+                    viewTabs.querySelectorAll('button').forEach(btn => {
+                        btn.classList.remove('tab-active');
+                        btn.classList.add('tab-inactive');
+                    });
+                    clickedTab.classList.add('tab-active');
+                    clickedTab.classList.remove('tab-inactive');
+                    render();
+                 }
+            });
+
+            transactionListContainer.addEventListener('click', (e) => {
+                const deleteButton = e.target.closest('.delete-btn');
+                if (deleteButton) {
+                    deleteTransactionFromFirestore(deleteButton.dataset.id);
+                }
+            });
+
+            // --- MODAL LOGIC ---
+            loadHistoryBtn.addEventListener('click', () => {
+                historyModalOverlay.classList.remove('hidden');
+                historyModalOverlay.classList.add('flex');
+            });
+
+            closeHistoryModalBtn.addEventListener('click', () => {
+                historyModalOverlay.classList.add('hidden');
+                historyModalOverlay.classList.remove('flex');
+            });
+
+            saveHistoryBtn.addEventListener('click', async () => {
+                const monthIndex = parseInt(monthSelect.value, 10);
+                const nelsonPayment = parseInt(nelsonTotalInput.value, 10) || 0;
+                const gabrielPayment = parseInt(gabrielTotalInput.value, 10) || 0;
+
+                const year = state.selectedDate.getFullYear();
+                const dateForTransaction = new Date(year, monthIndex, 15);
+
+                if (nelsonPayment > 0) {
+                    await addTransactionToFirestore({
+                        barber: 'Nelson',
+                        paymentMethod: 'HISTORICO',
+                        amount: nelsonPayment * 2,
+                        timestamp: dateForTransaction.toISOString(),
+                        isDummy: true
+                    });
+                }
+                if (gabrielPayment > 0) {
+                     await addTransactionToFirestore({
+                        barber: 'Gabriel',
+                        paymentMethod: 'HISTORICO',
+                        amount: gabrielPayment * 2,
+                        timestamp: dateForTransaction.toISOString(),
+                        isDummy: true
+                    });
+                }
+                closeHistoryModalBtn.click();
+            });
+            
+            const populateMonthSelect = () => {
+                const monthNames = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+                monthSelect.innerHTML = '';
+                monthNames.forEach((name, index) => {
+                    const option = document.createElement('option');
+                    option.value = index;
+                    option.textContent = name;
+                    monthSelect.appendChild(option);
+                });
+                monthSelect.value = new Date().getMonth();
+            };
+
+            // --- INITIALIZATION ---
+            async function main() {
+                if (typeof __initial_auth_token !== 'undefined') {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+                
+                populateMonthSelect();
+                datePicker.value = toISODateString(state.selectedDate);
+                listenForTransactions();
+            }
+
+            main();
+
+        } catch (error) {
+            console.error("Error al inicializar la aplicación:", error);
+            document.getElementById('app-container').innerHTML = `<div class="p-4 text-center text-red-500">
+                <h1 class="text-xl font-bold">Error de Configuración</h1>
+                <p>La configuración de Firebase no es correcta. Por favor, revisa las llaves que pegaste en el código.</p>
+                <p class="text-sm text-gray-500 mt-2">${error.message}</p>
+            </div>`;
+        }
+    </script>
+
+</body>
+</html>
